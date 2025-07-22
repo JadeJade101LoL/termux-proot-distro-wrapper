@@ -1,0 +1,67 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: YourName <your@email.com>
+Date: Thu, 1 Jan 1970 00:00:00 +0000
+Subject: [PATCH] Replace cutils_getenv() with getenv() and remove cutils dependency
+
+---
+ meson.build               | 1 -
+ src/main.c                | 4 ++--
+ src/utils/environment.c   | 5 ++---
+ src/include/environment.h | 2 +-
+ 4 files changed, 5 insertions(+), 7 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index abc1234..def5678 100644
+--- a/meson.build
++++ b/meson.build
+@@ -12,7 +12,6 @@ project(
+ 
+ dependencies = [
+     dependency('libproot'),
+-    dependency('cutils'),
+     dependency('android-spawn'),
+ ]
+ 
+diff --git a/src/main.c b/src/main.c
+index 1234567..89abcde 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -1,6 +1,6 @@
+-#include <cutils/env.h>
++#include <stdlib.h>
+ 
+ char* get_system_path() {
+-    return cutils_getenv("PATH");
++    return getenv("PATH");
+ }
+ 
+diff --git a/src/utils/environment.c b/src/utils/environment.c
+index 2345678..3456789 100644
+--- a/src/utils/environment.c
++++ b/src/utils/environment.c
+@@ -1,9 +1,8 @@
+-#include <cutils/env.h>
++#include <stdlib.h>
+ #include "environment.h"
+ 
+ char* get_system_var(const char* name) {
+-    char* value = cutils_getenv(name);
+-    if (!value) value = "default";
+-    return value;
++    char* value = getenv(name);
++    return value ? value : "default";
+ }
+ 
+diff --git a/src/include/environment.h b/src/include/environment.h
+index 3456789..456789a 100644
+--- a/src/include/environment.h
++++ b/src/include/environment.h
+@@ -1,5 +1,5 @@
+ #pragma once
+-#include <cutils/env.h>
++#include <stdlib.h>
+ 
+ #ifdef __cplusplus
+ extern "C" {
+-- 
+2.34.1
